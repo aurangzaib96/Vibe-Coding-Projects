@@ -1,0 +1,96 @@
+Smart To-Do Organizer - Requirements Specification
+
+1. Overview
+-----------
+The Smart To-Do Organizer is a task management application that automatically prioritizes tasks based on deadlines, user habits, and optional user-defined priority overrides. The system is intended to help users stay focused, reduce stress, and ensure important tasks are completed on time by surfacing the most relevant tasks each day.
+
+2. Key Features
+---------------
+- Task creation and editing (title, description, due date/time, estimated duration, tags/categories)
+- Habit tracking (recurring tasks, streaks, habit completion reminders)
+- Automatic prioritization engine (deadline proximity, habit consistency, task urgency, user preferences)
+- Daily focus list (top tasks recommended for the day)
+- Notifications and reminders (push/desktop alerts for upcoming deadlines or habit sessions)
+- Task status tracking (pending, in progress, completed, snoozed)
+- Sorting and filtering (by deadline, priority score, tag, status)
+- Optional integrations (calendar import/export, external reminder systems)
+
+3. Functional Requirements
+--------------------------
+FR-1: Users can create a task with a title, description, due date/time, estimated duration, tags, and priority level.
+FR-2: Users can edit or delete existing tasks.
+FR-3: Users can mark tasks as completed, snoozed, or in progress.
+FR-4: Users can define habits as recurring tasks with a frequency (daily, weekly, specific days) and track completion streaks.
+FR-5: The system computes a "priority score" for each task based on:
+  - Time until due date (sooner = higher score)
+  - Estimated duration (short tasks may be surfaced to fill gaps)
+  - Habit consistency (tasks tied to habits that are near breaking a streak gain priority)
+  - User-specified priority overrides (high/medium/low)
+  - Task importance or impact (user input or inferred from tags)
+FR-6: The system generates a daily list of top N tasks (e.g., top 5) sorted by computed priority score.
+FR-7: Users can optionally pin tasks to the top of their daily list.
+FR-8: The system sends reminders/notifications according to user settings (e.g., 15 minutes before due date, daily start-of-day summary).
+FR-9: The system stores tasks and habits persistently between sessions (local storage or database).
+FR-10: The system provides a searchable view of tasks.
+
+4. Non‑Functional Requirements
+------------------------------
+NFR-1: The system must be responsive and fast, returning the daily prioritized list within 1 second for typical task volumes (<= 200 tasks).
+NFR-2: Data must be saved reliably; no data loss on crash or restart.
+NFR-3: The system should support offline usage (if a mobile/desktop app) with syncing when online.
+NFR-4: The UI must be accessible and usable across common screen sizes (desktop and mobile).
+NFR-5: The priority algorithm should be explainable; users should be able to view why a task was recommended.
+
+5. User Stories
+---------------
+US-1: As a user, I want to add tasks with due dates so I can keep track of what needs to be done.
+US-2: As a user, I want the app to suggest which tasks I should do today based on urgency and my habits.
+US-3: As a user, I want to see my habit streaks and get reminded to keep up habits.
+US-4: As a user, I want to be notified before a task deadline so I don’t miss it.
+US-5: As a user, I want to filter tasks by category so I can focus on a specific area (e.g., work, personal).
+
+6. Data Model (Example)
+------------------------
+Task:
+  - id (UUID)
+  - title (string)
+  - description (string)
+  - dueDateTime (datetime)
+  - estimatedDurationMinutes (integer)
+  - tags (list of strings)
+  - status (enum: pending, in_progress, completed, snoozed)
+  - priorityOverride (enum: low, medium, high, none)
+  - createdAt (datetime)
+  - updatedAt (datetime)
+  - habitId (optional UUID)
+
+Habit:
+  - id (UUID)
+  - name (string)
+  - frequency (enum: daily, weekly, custom)
+  - daysOfWeek (list of enums, if weekly)
+  - streakCount (integer)
+  - lastCompletedAt (datetime)
+  - reminderTime (time)
+
+7. Assumptions and Constraints
+-----------------------------
+- Users are expected to provide at least a title and due date for tasks to be prioritized effectively.
+- Habit completion is recorded by marking a task or habit instance as completed.
+- The app may initially run locally; cloud sync is optional and considered a future enhancement.
+- Notifications are supported on platforms with native notification APIs; otherwise, the app will show in-app alerts.
+
+8. Acceptance Criteria
+----------------------
+- When a new task with a due date is added, it appears in the prioritized list according to the computed score.
+- Habit tasks that are near breaking a streak appear higher in priority.
+- Users can override the priority and see changes reflected immediately.
+- The daily focus list shows at least 5 tasks and updates when tasks are completed or added.
+
+9. Future Enhancements (Optional)
+----------------------------------
+- Machine learning to learn user preferences and adjust priority weights.
+- Integration with calendar apps (Google Calendar, Outlook) to import events as tasks.
+- Collaborative task lists (shared tasks among multiple users).
+- Time-blocking view / agenda view with calendar integration.
+- Smart suggestions for breaking large tasks into smaller steps.
